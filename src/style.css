@@ -1,0 +1,9 @@
+.county :hover {
+    fill: red;
+}
+
+.state-borders {
+    fill: white;
+    stroke: #fff;
+    stroke-width: 1px;
+}

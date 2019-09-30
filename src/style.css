@@ -1,9 +1,45 @@
-.county :hover {
-    fill: red;
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 }
 
-.state-borders {
-    fill: white;
-    stroke: #fff;
+#title {
+    font-size: 2em;
+    margin-bottom: .5em;
+}
+
+.county:hover {
+    stroke: #212f3c;
+}
+
+.state {
+    fill: none;
+    stroke: white;
     stroke-width: 1px;
+}
+
+#tooltip {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    padding: .5vw;
+    font-size: .8em;
+    font-weight: bolder;
+    border-radius: 5px;
+    background-color: #edf8b1;
+    box-shadow: 1px 1px 8px 6px rgba(103,103,103,0.9);
 }

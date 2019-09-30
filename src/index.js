@@ -5,7 +5,10 @@ import './style.css';
 const url_education = "https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/for_user_education.json";
 const url_counties = "https://raw.githubusercontent.com/no-stack-dub-sack/testable-projects-fcc/master/src/data/choropleth_map/counties.json";
 const width = 1000;
-const height = 600;
+const height = width * .6;
+const legendWidth = width / 4;
+const legendHeight = legendWidth / 6;
+const margin = width / 100;
 const myColor = [
     '#deebf7','#c6dbef','#9ecae1','#6baed6','#4292c6','#2171b5','#08519c','#08306b'
 ];
@@ -28,6 +31,15 @@ const chart = d3.select("#main")
     .attr("width", width)
     .attr("height", height);
 
+const translate = {
+    x: width - legendWidth * 1.5,
+    y: margin
+}
+const legend = chart.append("g")
+    .attr("transform", `translate(${translate.x},${translate.y})`)
+    .attr("id", "legend")
+    .style("font-size", ".7em");
+
 const tooltip = d3.select("#main")
     .append("div")
     .attr("id", "tooltip")
@@ -45,7 +57,7 @@ d3.json(url_counties).then(topology => {
 
         const states = topojson.feature(topology, topology.objects.states);
 
-        const findObject = (id, key) => educationData.find(item => item["fips"] === id)[key];
+        const findValueOfKey = (id, key) => educationData.find(item => item["fips"] === id)[key];
 
         const colorScale = d3.scaleQuantize()
             .domain([minValue, maxValue])
@@ -58,25 +70,24 @@ d3.json(url_counties).then(topology => {
             .append("path")
             .attr("class", "county")
             .attr("d", path)
-            .attr("data-fips", d => findObject(d.id, "fips"))
-            .attr("data-education", d => findObject(d.id, "bachelorsOrHigher"))
-            .attr("fill", d => colorScale(findObject(d.id, "bachelorsOrHigher")))
+            .attr("stroke-dasharray", "1 2")
+            .attr("data-fips", d => findValueOfKey(d.id, "fips"))
+            .attr("data-education", d => findValueOfKey(d.id, "bachelorsOrHigher"))
+            .attr("fill", d => colorScale(findValueOfKey(d.id, "bachelorsOrHigher")))
             .on("mouseover", d => {
             tooltip.transition()
                 .duration(300)
                 .style("opacity", .7);
-            tooltip.html(`<span>${findObject(d.id, "area_name")}, ${findObject(d.id, "state")}: ${findObject(d.id, "bachelorsOrHigher")}%</span>`)
+            tooltip.html(`<span>${findValueOfKey(d.id, "area_name")}, ${findValueOfKey(d.id, "state")}: ${findValueOfKey(d.id, "bachelorsOrHigher")}%</span>`)
                 .style("left", d3.event.pageX + 15 + "px")
                 .style("top", d3.event.pageY + "px")
-                .attr("data-education", findObject(d.id, "bachelorsOrHigher"));
-            console.log(d3.event.pageX, d3.event.pageY)
+                .attr("data-education", findValueOfKey(d.id, "bachelorsOrHigher"));
             })
             .on("mouseout", d => {
                 tooltip.transition()
                     .duration(250)
                     .style("opacity", 0)
             });
-
 
         chart.append("g")
             .selectAll("path")
@@ -85,5 +96,38 @@ d3.json(url_counties).then(topology => {
             .append("path")
             .attr("class", "state")
             .attr("d", path);
+
+        const legendItems = () => {
+            let valueForColor = Math.round(minValue * 10) / 10; //value for elem from myColor Array
+            let itemsLegend = [];
+            const step = Math.round((maxValue - minValue) / myColor.length * 10) / 10 ;
+
+            while (valueForColor <= Math.round(maxValue * 10) / 10) {
+                itemsLegend.push(Math.round(valueForColor));
+                valueForColor = Math.round((valueForColor + step) * 10) / 10;
+            }
+            return itemsLegend;
+        }
+
+        const legendItemWidth = legendWidth / 8;
+        legend.selectAll("rect")
+            .data(myColor)
+            .enter()
+            .append("rect")
+            .attr("x", (d, i) => legendItemWidth * i)
+            .attr("y", 0)
+            .attr("width", legendItemWidth)
+            .attr("height", legendItemWidth / 4)
+            .attr("fill", d => d)
+            .attr("stroke", "#f5f5f5");
+
+        legend.selectAll("text")
+            .data(legendItems)
+            .enter()
+            .append("text")
+            .attr("x", (d, i) => legendItemWidth * i)
+            .attr("y", legendHeight - legendItemWidth / 1.3)
+            .text(d => d + '%');
+
     });
 });

@@ -22,8 +22,19 @@ body {
     margin-bottom: .5em;
 }
 
+#description {
+    margin-bottom: 1vw;
+}
+
+.county {
+    stroke: white;
+    stroke-width: .3;
+}
+
 .county:hover {
     stroke: #212f3c;
+    stroke-dasharray: none;
+    stroke-width: 1;
 }
 
 .state {
@@ -40,6 +51,6 @@ body {
     font-size: .8em;
     font-weight: bolder;
     border-radius: 5px;
-    background-color: #edf8b1;
-    box-shadow: 1px 1px 8px 6px rgba(103,103,103,0.9);
+    background-color: #F5B7B1;
+    box-shadow: 1px 1px 6px 3px rgba(103,103,103,0.9);
 }
